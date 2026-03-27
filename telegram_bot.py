@@ -3,7 +3,7 @@ from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTyp
 from openai_client import interpretar_mensagem
 from sheets import salvar_no_sheets, ler_gastos
 
-TOKEN = "8476573438:AAHSbx7x6DPZ7tT7nwpIWMHVDfesaUvexYM"
+TOKEN = "8476573438:AAHPC6M6zMXGTl5_6em0jZRxqHk83Oft_iU"
 
 async def receber_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
     texto = update.message.text
