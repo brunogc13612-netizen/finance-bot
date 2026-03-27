@@ -79,8 +79,12 @@ async def receber_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
         print("Erro:", e)
         await update.message.reply_text("❌ Erro ao registrar")
 
-app = ApplicationBuilder().token(TOKEN).build()
+    app = ApplicationBuilder().token(TOKEN).build()
 
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, receber_mensagem))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, receber_mensagem))
 
-app.run_polling()
+    # 🔥 limpa conflitos antigos
+    await app.bot.delete_webhook(drop_pending_updates=True)
+    await app.run_polling()
+if __name__ == "__main__":
+    asyncio.run(main())
