@@ -6,6 +6,10 @@ import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import os
 import logging
+from datetime import time
+
+# 🔥 logging global
+logging.basicConfig(level=logging.INFO)
 
 # 🔥 servidor fake pro Render
 class Handler(BaseHTTPRequestHandler):
@@ -19,15 +23,34 @@ def run_server():
     server = HTTPServer(("0.0.0.0", port), Handler)
     server.serve_forever()
 
-threading.Thread(target=run_server).start()
+threading.Thread(target=run_server, daemon=True).start()
 
 TOKEN = os.getenv("TOKEN")
+ids_env = os.getenv("CHAT_IDS", "")
+nomes_env = os.getenv("CHAT_NAMES", "")
+
+ids = ids_env.split(",") if ids_env else []
+nomes = nomes_env.split(",") if nomes_env else []
+
+CHAT_MAP = {
+    int(id_.strip()): nome.strip()
+    for id_, nome in zip(ids, nomes)
+    logging.info(f"Enviando lembrete para {nome} ({chat_id})")
+    if not CHAT_MAP:
+    logging.warning("⚠️ Nenhum CHAT_ID configurado!")
+}
+# 🔔 FUNÇÃO DE LEMBRETE
+async def lembrete(context: ContextTypes.DEFAULT_TYPE):
+    for chat_id, nome in CHAT_MAP.items():
+        await context.bot.send_message(
+            chat_id=chat_id,
+            text=f"⏰ {nome}, lembra de registrar seus gastos 💸"
+        )
 
 # 🔥 FUNÇÃO DO BOT
 async def receber_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
     texto = update.message.text
-    
-    logging.basicConfig(level=logging.INFO)
+
     logging.info(f"CHAT_ID: {update.effective_chat.id}")
     logging.info(f"Mensagem: {texto}")
 
@@ -75,13 +98,22 @@ async def receber_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(resposta)
 
     except Exception as e:
-        print("Erro:", e)
+        logging.error(f"Erro: {e}")
         await update.message.reply_text("❌ Erro ao registrar")
 
-# 🔥 INICIA O BOT (FORA DA FUNÇÃO)
+# 🔥 INICIA O BOT
 app = ApplicationBuilder().token(TOKEN).build()
 
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, receber_mensagem))
+
+job_queue = app.job_queue
+
+job_queue.run_once(lembrete, 10)
+
+# 🔔 AGENDAMENTO (UTC)
+
+job_queue.run_daily(lembrete, time(hour=16, minute=0))   # 13:00 BR
+job_queue.run_daily(lembrete, time(hour=22, minute=30))  # 19:30 BR
 
 # limpa conflitos
 app.bot.delete_webhook(drop_pending_updates=True)
