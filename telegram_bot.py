@@ -35,13 +35,14 @@ nomes = nomes_env.split(",") if nomes_env else []
 CHAT_MAP = {
     int(id_.strip()): nome.strip()
     for id_, nome in zip(ids, nomes)
-    logging.info(f"Enviando lembrete para {nome} ({chat_id})")
     if not CHAT_MAP:
     logging.warning("⚠️ Nenhum CHAT_ID configurado!")
 }
 # 🔔 FUNÇÃO DE LEMBRETE
 async def lembrete(context: ContextTypes.DEFAULT_TYPE):
     for chat_id, nome in CHAT_MAP.items():
+        logging.info(f"Enviando lembrete para {nome} ({chat_id})")
+        
         await context.bot.send_message(
             chat_id=chat_id,
             text=f"⏰ {nome}, lembra de registrar seus gastos 💸"
