@@ -67,12 +67,6 @@ async def receber_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
         print("Erro:", e)
         await update.message.reply_text("❌ Erro ao registrar")
 
-    for chat_id in CHAT_IDS:
-        await context.bot.send_message(
-            chat_id=chat_id,
-            text="📝 Não esquece de registrar seus gastos de hoje!"
-        )
-
 
 app = ApplicationBuilder().token(TOKEN).build()
 
