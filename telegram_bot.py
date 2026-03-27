@@ -2,7 +2,7 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
 from openai_client import interpretar_mensagem
 from sheets import salvar_no_sheets, ler_gastos
-from threading
+import threading
 from https.server import HTTPServer, BaseHTTPRequestHandler
 import os
 
