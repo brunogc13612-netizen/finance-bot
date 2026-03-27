@@ -22,8 +22,10 @@ threading.Thread(target=run_server).start()
 
 TOKEN = os.getenv("TOKEN")
 
+
 async def receber_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
     texto = update.message.text
+    print("CHAT_ID: ", update.effective_chat.id)
     usuario = update.message.from_user.first_name
 
     print("Mensagem:", texto)
