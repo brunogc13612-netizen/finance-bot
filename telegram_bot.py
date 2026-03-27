@@ -8,7 +8,6 @@ TOKEN = os.getenv("TOKEN")
 
 
 async def receber_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
     texto = update.message.text
     usuario = update.message.from_user.first_name
 
@@ -23,12 +22,7 @@ async def receber_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         for linha in linhas[1:]:  # pula cabeçalho
             categoria = linha[2]
-            valor_str = linha[4]
-
-            # limpa o valor
-            valor_str = valor_str.replace("R$", "").replace(",", ".").strip()
-
-            valor = float(valor_str)
+            valor = float(linha[4])
 
             total += valor
 
@@ -66,7 +60,6 @@ async def receber_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         print("Erro:", e)
         await update.message.reply_text("❌ Erro ao registrar")
-
 
 app = ApplicationBuilder().token(TOKEN).build()
 
