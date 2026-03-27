@@ -14,15 +14,16 @@ async def receber_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print("Mensagem:", texto)
 
     # 🔥 AQUI ENTRA O RESUMO
-    if texto.lower() == "resumo":
+    if resumo in texto.lower():
         linhas = ler_gastos()
-
         total = 0
         categorias = {}
 
         for linha in linhas[1:]:  # pula cabeçalho
             categoria = linha[2]
-            valor = float(linha[4])
+            valor = linha[4]
+            valor = valor.replace("R$","").replace(",",".").strip()
+            valor = float(valor)
 
             total += valor
 
@@ -34,9 +35,9 @@ async def receber_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resposta = "📊 Resumo:\n\n"
 
         for cat, val in categorias.items():
-            resposta += f"{cat}: R${val}\n"
+            resposta += f"{cat}: R${val: .2f}\n"
 
-        resposta += f"\n💰 Total: R${total}"
+        resposta += f"\n💰 Total: R${total: .2f}"
 
         await update.message.reply_text(resposta)
         return  # 🔥 MUITO IMPORTANTE
