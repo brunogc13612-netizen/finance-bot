@@ -36,8 +36,8 @@ CHAT_MAP = {
     int(id_.strip()): nome.strip()
     for id_, nome in zip(ids, nomes)
 }
-    if not CHAT_MAP:
-    logging.warning("⚠️ Nenhum CHAT_ID configurado!")
+        if not CHAT_MAP:
+        logging.warning("⚠️ Nenhum CHAT_ID configurado!")
 
 # 🔔 FUNÇÃO DE LEMBRETE
 async def lembrete(context: ContextTypes.DEFAULT_TYPE):
