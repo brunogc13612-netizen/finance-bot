@@ -3,7 +3,7 @@ from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTyp
 from openai_client import interpretar_mensagem
 from sheets import salvar_no_sheets, ler_gastos
 import threading
-from https.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import HTTPServer, BaseHTTPRequestHandler
 import os
 
 class Handler(BaseHTTPRequestHandler):
