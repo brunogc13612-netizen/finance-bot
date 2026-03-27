@@ -14,7 +14,7 @@ async def receber_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print("Mensagem:", texto)
 
     # 🔥 AQUI ENTRA O RESUMO
-    if resumo in texto.lower():
+    if "resumo" in texto.lower():
         linhas = ler_gastos()
         total = 0
         categorias = {}
