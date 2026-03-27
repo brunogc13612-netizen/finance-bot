@@ -84,7 +84,5 @@ async def receber_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, receber_mensagem))
 
     # 🔥 limpa conflitos antigos
-    await app.bot.delete_webhook(drop_pending_updates=True)
-    await app.run_polling()
-if __name__ == "__main__":
-    asyncio.run(main())
+    app.bot.delete_webhook(drop_pending_updates=True)
+    app.run_polling()
