@@ -2,12 +2,9 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
 from openai_client import interpretar_mensagem
 from sheets import salvar_no_sheets, ler_gastos
-from datetime import time
-import pytz
 import os
 
 TOKEN = os.getenv("TOKEN")
-
 
 
 async def receber_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -69,28 +66,16 @@ async def receber_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         print("Erro:", e)
         await update.message.reply_text("❌ Erro ao registrar")
-async def lembrar_gastos(context):
+
     for chat_id in CHAT_IDS:
         await context.bot.send_message(
             chat_id=chat_id,
             text="📝 Não esquece de registrar seus gastos de hoje!"
         )
 
-print(update.effective_chat.id)
 
 app = ApplicationBuilder().token(TOKEN).build()
 
-brasil = pytz.timezone("America/Sao_Paulo")
-
-app.job_queue.run_daily(
-    lembrar_gastos,
-    time(hour=13, minute=0, tzinfo=brasil)
-)
-
-app.job_queue.run_daily(
-    lembrar_gastos,
-    time(hour=19, minute=30, tzinfo=brasil)
-)
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, receber_mensagem))
 
 app.run_polling()
