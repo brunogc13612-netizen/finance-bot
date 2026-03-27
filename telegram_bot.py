@@ -5,6 +5,7 @@ from sheets import salvar_no_sheets, ler_gastos
 import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import os
+import logging
 
 # 🔥 servidor fake pro Render
 class Handler(BaseHTTPRequestHandler):
@@ -25,7 +26,10 @@ TOKEN = os.getenv("TOKEN")
 # 🔥 FUNÇÃO DO BOT
 async def receber_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
     texto = update.message.text
-    print("CHAT_ID:", update.effective_chat.id)
+    
+    logging.basicConfig(level=logging.INFO)
+    logging.info(f"CHAT_ID: {update.effective_chat.id}")
+    logging.info(f"Mensagem: {texto}")
 
     if "resumo" in texto.lower():
         linhas = ler_gastos()
