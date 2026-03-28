@@ -1,6 +1,8 @@
 python-telegram-bot[job-queue]>=21.0
 google-api-python-client
 google-auth
+matplotlib
+numpy
 google-auth-httplib2
 google-auth-oauthlib
 requests
