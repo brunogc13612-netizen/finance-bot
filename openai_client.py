@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def interpretar_mensagem(texto):
     texto = texto.lower()
@@ -11,7 +11,7 @@ def interpretar_mensagem(texto):
     # categoria simples
     if any(p in texto for p in ["uber", "gasolina", "99"]):
         categoria = "Transporte"
-    elif any(p in texto for p in ["mercado", "ifood", "restaurante", "lanche", "Alimentação", "alimentação"]):
+    elif any(p in texto for p in ["mercado", "ifood", "restaurante", "lanche"]):
         categoria = "Alimentação"
     elif any(p in texto for p in ["cinema", "netflix", "bar", "lazer"]):
         categoria = "Lazer"
@@ -21,8 +21,8 @@ def interpretar_mensagem(texto):
     # descrição = texto original
     descricao = texto
 
-    # data atual
-    data = datetime.now().strftime("%Y-%m-%d")
+    # 🔥 CORREÇÃO DO FUSO (Brasil UTC-3)
+    data = (datetime.utcnow() - timedelta(hours=3)).strftime("%Y-%m-%d")
 
     return {
         "valor": valor,
