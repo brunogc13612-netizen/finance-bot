@@ -110,8 +110,6 @@ app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, receber_mensagem
 
 job_queue = app.job_queue
 
-job_queue.run_once(lembrete, 10)
-
 # 🔔 AGENDAMENTO (UTC)
 
 job_queue.run_daily(lembrete, time(hour=16, minute=0))   # 13:00 BR
