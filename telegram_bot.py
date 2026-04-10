@@ -9,7 +9,7 @@ import logging
 from datetime import time
 import matplotlib.pyplot as plt
 
-# 🔥 logging global
+# 🔥 logging
 logging.basicConfig(level=logging.INFO)
 
 # 🔥 servidor fake pro Render
@@ -26,8 +26,8 @@ def run_server():
 
 threading.Thread(target=run_server, daemon=True).start()
 
+# 🔐 ENV
 TOKEN = os.getenv("TOKEN")
-
 ids_env = os.getenv("CHAT_IDS", "")
 nomes_env = os.getenv("CHAT_NAMES", "")
 
@@ -42,7 +42,7 @@ CHAT_MAP = {
 if not CHAT_MAP:
     logging.warning("⚠️ Nenhum CHAT_ID configurado!")
 
-# 🔔 FUNÇÃO DE LEMBRETE
+# 🔔 LEMBRETE
 async def lembrete(context: ContextTypes.DEFAULT_TYPE):
     for chat_id, nome in CHAT_MAP.items():
         logging.info(f"Enviando lembrete para {nome} ({chat_id})")
@@ -100,45 +100,43 @@ def gerar_graficos(linhas):
         por_categoria[categoria] = por_categoria.get(categoria, 0) + valor
         por_pessoa[pessoa] = por_pessoa.get(pessoa, 0) + valor
 
-    # 🥧 Pizza
+    # pizza
     plt.figure()
     plt.pie(por_categoria.values(), labels=por_categoria.keys(), autopct='%1.1f%%')
     plt.title("Gastos por Categoria")
-    plt.savefig("categoria.png")
+    plt.savefig("/tmp/categoria.png")
     plt.close()
 
-    # 📊 Barras
+    # barras
     plt.figure()
     plt.bar(por_pessoa.keys(), por_pessoa.values())
     plt.title("Gastos por Pessoa")
     plt.xticks(rotation=45)
-    plt.savefig("pessoa.png")
+    plt.savefig("/tmp/pessoa.png")
     plt.close()
 
-    return "categoria.png", "pessoa.png"
+    return "/tmp/categoria.png", "/tmp/pessoa.png"
 
-# 🔥 FUNÇÃO DO BOT
+# 🤖 BOT
 async def receber_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
     texto = update.message.text
 
     logging.info(f"CHAT_ID: {update.effective_chat.id}")
     logging.info(f"Mensagem: {texto}")
 
-    # 📊 DASHBOARD
+    # DASHBOARD
     if "dashboard" in texto.lower():
         linhas = ler_gastos()
 
-        resposta = gerar_dashboard(linhas)
-        await update.message.reply_text(resposta)
+        await update.message.reply_text(gerar_dashboard(linhas))
 
         cat_img, pessoa_img = gerar_graficos(linhas)
 
         await update.message.reply_photo(photo=open(cat_img, "rb"))
         await update.message.reply_photo(photo=open(pessoa_img, "rb"))
-
         return
 
-    # 📊 RESUMO
+    # RESUMO
     if "resumo" in texto.lower():
         linhas = ler_gastos()
         total = 0
@@ -151,11 +149,9 @@ async def receber_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
             valor = float(valor)
 
             total += valor
-
             categorias[categoria] = categorias.get(categoria, 0) + valor
 
         resposta = "📊 Resumo:\n\n"
-
         for cat, val in categorias.items():
             resposta += f"{cat}: R${val:.2f}\n"
 
@@ -164,7 +160,7 @@ async def receber_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(resposta)
         return
 
-    # 💸 REGISTRO NORMAL
+    # REGISTRO
     try:
         dados = interpretar_mensagem(texto)
         dados["pessoa"] = update.message.from_user.first_name
@@ -184,18 +180,18 @@ async def receber_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logging.error(f"Erro: {e}")
         await update.message.reply_text("❌ Erro ao registrar")
 
-# 🔥 INICIA O BOT
+# 🚀 INICIALIZAÇÃO
 app = ApplicationBuilder().token(TOKEN).build()
 
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, receber_mensagem))
 
 job_queue = app.job_queue
 
-# 🔔 AGENDAMENTO (UTC)
-job_queue.run_daily(lembrete, time(hour=16, minute=0))   # 13h BR
-job_queue.run_daily(lembrete, time(hour=22, minute=30))  # 19h30 BR
+# lembretes
+job_queue.run_daily(lembrete, time(hour=16, minute=0))
+job_queue.run_daily(lembrete, time(hour=22, minute=30))
 
-# limpa conflitos
+# limpa webhook
 app.bot.delete_webhook(drop_pending_updates=True)
 
 print("🤖 Bot iniciado...")
